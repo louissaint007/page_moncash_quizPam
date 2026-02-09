@@ -1,0 +1,135 @@
+:root {
+    --primary: #ff0000; /* MonCash Red */
+    --accent: #ffd700;  /* Gold accent */
+    --bg-dark: #0a0a0c;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255, 0, 0, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.05) 0%, transparent 40%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    overflow: hidden;
+}
+
+.glass-container {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    padding: 3rem;
+    border-radius: 2rem;
+    text-align: center;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-wrapper {
+    position: relative;
+    margin-bottom: 2rem;
+    display: inline-block;
+}
+
+.moncash-logo {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    z-index: 2;
+    position: relative;
+}
+
+.moncash-logo .m { color: var(--primary); }
+.moncash-logo .c { color: white; }
+.moncash-logo .cash { color: var(--primary); }
+
+.pulse-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0.2;
+    filter: blur(20px);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+    50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.1; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+}
+
+h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #fff, #888);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+p#status-text {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 2rem;
+}
+
+.loader-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.progress {
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 10px;
+    animation: loading 2s infinite ease-in-out;
+}
+
+@keyframes loading {
+    0% { transform: translateX(-100%); width: 30%; }
+    50% { width: 60%; }
+    100% { transform: translateX(400%); width: 30%; }
+}
+
+.security-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.lock-icon {
+    width: 14px;
+    height: 14px;
+}
