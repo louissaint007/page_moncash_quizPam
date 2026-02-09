@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merci pour votre paiement !</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #cf0921; /* MonCash Red-ish tone */
+            --primary-hover: #a8071a;
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            --text-color: #2d3436;
+            --text-secondary: #636e72;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-color);
+        }
+
+        .card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            background: #e6f7efff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            stroke-width: 3;
+            stroke: #2ecc71;
+            fill: none;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawCheck 0.6s 0.8s ease-in-out forwards;
+        }
+
+        @keyframes drawCheck {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(207, 9, 33, 0.3);
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(207, 9, 33, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #b2bec3;
+        }
+
+        /* Success Confetti Animation */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f2d74e;
+            animation: fall 3s linear infinite;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="icon-container">
+            <svg class="checkmark" viewBox="0 0 52 52">
+                <path d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        </div>
+        
+        <h1>Paiement Confirmé !</h1>
+        <p>Merci pour votre confiance. Votre transaction a été traitée avec succès et votre colis est en cours de préparation.</p>
+        
+        <a href="#" id="app-link" class="btn">Retourner vers l'application</a>
+
+        <div class="footer">
+            Transaction sécurisée par MonCash
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        // Note: Remplacez l'URL ci-dessous par votre schéma d'URL réel plus tard
+        const APP_DEEP_LINK = "votre-app-scheme://success"; 
+        
+        document.getElementById('app-link').addEventListener('click', function(e) {
+            // Optionnel : Tentative de redirection directe
+            // window.location.href = APP_DEEP_LINK;
+        });
+
+        console.log("Paiement confirmé via MonCash. Page prête pour intégration.");
+    </script>
+</body>
+</html>
