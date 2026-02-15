@@ -74,18 +74,21 @@ module.exports = async (req, res) => {
             return res.status(400).json({ error: 'Order ID (Transaction ID internal) not found' });
         }
 
-        // 3. Update Supabase
-        // Note: the table is 'transactions', columns are 'status', 'metadata', etc.
+        // 3. Update/Insert into Supabase 'transactions' table
+        // We use upsert on the 'id' column which is now a valid UUID from Site_Quiz_Pam
         const { error: dbError } = await supabase
             .from('transactions')
-            .update({
+            .upsert({
+                id: finalOrderId,
+                user_id: moncashPayment.userId || null, // Optional: capture user if provided
+                amount: moncashPayment.cost,
                 status: 'completed',
+                payment_method: 'MONCASH',
                 metadata: {
                     moncash: moncashPayment,
                     updated_at: new Date().toISOString()
                 }
-            })
-            .eq('id', finalOrderId);
+            }, { onConflict: 'id' });
 
         if (dbError) {
             throw dbError;
