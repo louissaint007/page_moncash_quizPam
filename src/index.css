@@ -201,6 +201,74 @@ h1 {
     letter-spacing: 1px;
 }
 
+.loader-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 35px;
+}
+
+.progress {
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), #ffd700);
+    border-radius: 10px;
+    animation: loading 2s infinite ease-in-out;
+}
+
+@keyframes loading {
+    0% {
+        transform: translateX(-100%);
+        width: 30%;
+    }
+
+    50% {
+        width: 60%;
+    }
+
+    100% {
+        transform: translateX(400%);
+        width: 30%;
+    }
+}
+
+.manual-form {
+    margin-top: 20px;
+    text-align: left;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #eee;
+}
+
+.manual-form label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.manual-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.manual-form .btn-small {
+    padding: 10px 20px;
+    font-size: 14px;
+    width: 100%;
+}
+
 .confetti {
     position: absolute;
     width: 8px;
