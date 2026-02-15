@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 function App() {
-    const [status, setStatus] = useState('loading'); // 'loading', 'redirecting', 'success', 'error', 'manual'
-    const [message, setMessage] = useState('Préparation de votre paiement...');
+    const [status, setStatus] = useState('loading'); // 'loading', 'redirecting', 'success', 'error'
+    const [message, setMessage] = useState('Chargement...');
     const [redirectUrl, setRedirectUrl] = useState('');
-    const [manualTxId, setManualTxId] = useState('');
-    const [orderId, setOrderId] = useState('');
 
     useEffect(() => {
         const handleFlow = async () => {
@@ -14,9 +12,7 @@ function App() {
             const paramOrderId = urlParams.get('orderId');
             const amount = urlParams.get('amount');
 
-            if (paramOrderId) setOrderId(paramOrderId);
-
-            // Scenario 1: Verification (Return from MonCash)
+            // Scenario 1: Verification (Return/Redirect from MonCash)
             if (transactionId) {
                 setStatus('loading');
                 setMessage('Vérification de votre transaction...');
@@ -33,12 +29,12 @@ function App() {
                 } catch (error) {
                     console.error("Verification error:", error);
                     setStatus('error');
-                    setMessage("Impossible de vérifier automatiquement. Tu peux essayer de saisir l'ID manuellement.");
+                    setMessage("Impossible de vérifier automatiquement la transaction. " + error.message);
                 }
                 return;
             }
 
-            // Scenario 2: Initiation (Redirection to MonCash)
+            // Scenario 2: Initiation (Preparation from Site)
             if (amount && paramOrderId) {
                 setStatus('redirecting');
                 setMessage('Connexion sécurisée à MonCash...');
@@ -52,7 +48,7 @@ function App() {
 
                     if (response.ok && data.url) {
                         setRedirectUrl(data.url);
-                        // Auto redirect after 2s to let user see the "Preparation"
+                        // Auto redirect after 2s for visual transition
                         setTimeout(() => {
                             window.top.location.href = data.url;
                         }, 2000);
@@ -61,39 +57,18 @@ function App() {
                     }
                 } catch (error) {
                     setStatus('error');
-                    setMessage("Erreur: " + error.message);
+                    setMessage("Erreur d'initialisation: " + error.message);
                 }
                 return;
             }
 
-            // Scenario 3: No params or manual fallback
-            setStatus('manual');
-            setMessage("Saisissez les informations de votre transaction MonCash.");
+            // Scenario 3: Missing Info
+            setStatus('error');
+            setMessage("Informations de paiement manquantes dans l'URL.");
         };
 
         handleFlow();
     }, []);
-
-    const handleManualVerify = async (e) => {
-        e.preventDefault();
-        if (!manualTxId) return;
-        setStatus('loading');
-        setMessage('Vérification manuelle en cours...');
-        try {
-            const response = await fetch(`/api/verify?transactionId=${manualTxId}&orderId=${orderId}`);
-            const data = await response.json();
-            if (response.ok && data.success) {
-                setStatus('success');
-                setMessage('Paiement confirmé avec succès !');
-            } else {
-                setStatus('manual');
-                alert("Erreur: " + (data.error || "Transaction introuvable."));
-            }
-        } catch (error) {
-            setStatus('manual');
-            alert("Erreur de connexion.");
-        }
-    };
 
     return (
         <div className="card">
@@ -104,7 +79,7 @@ function App() {
                 </div>
             </div>
 
-            {/* Initiation / Loading View */}
+            {/* Preparation / Loading / Verification */}
             {(status === 'loading' || status === 'redirecting') && (
                 <>
                     <h1>{status === 'redirecting' ? 'Préparation...' : 'Vérification...'}</h1>
@@ -118,7 +93,7 @@ function App() {
                 </>
             )}
 
-            {/* Success View */}
+            {/* Success (Matches haitiShipping_thanks look) */}
             {status === 'success' && (
                 <>
                     <div className="icon-container success">
@@ -126,38 +101,28 @@ function App() {
                             <circle className="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
                             <path className="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                         </svg>
+                        <div className="confetti"></div>
+                        <div className="confetti" style={{ left: '10%', animationDelay: '0.2s' }}></div>
+                        <div className="confetti" style={{ right: '10%', animationDelay: '0.5s' }}></div>
                     </div>
                     <h1>Paiement Réussi !</h1>
                     <p className="status-text">{message}</p>
-                    <button className="btn" onClick={() => window.close()}>Fermer la fenêtre</button>
+                    <button className="btn" onClick={() => window.close()}>Retourner au jeu</button>
                 </>
             )}
 
-            {/* Error / Manual Entry View */}
-            {(status === 'error' || status === 'manual') && (
+            {/* Error */}
+            {status === 'error' && (
                 <>
-                    {status === 'error' && (
-                        <div className="icon-container error">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" stroke="#cf0921" strokeWidth="2" />
-                                <path d="M12 8V12M12 16H12.01" stroke="#cf0921" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
-                        </div>
-                    )}
-                    <h1>{status === 'error' ? 'Oups !' : 'Action Requise'}</h1>
+                    <div className="icon-container error">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z" stroke="#cf0921" strokeWidth="2" />
+                            <path d="M12 8V12M12 16H12.01" stroke="#cf0921" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                    <h1>Oups !</h1>
                     <p className="status-text">{message}</p>
-
-                    <form onSubmit={handleManualVerify} className="manual-form">
-                        <label>ID Transaction MonCash</label>
-                        <input
-                            type="text"
-                            placeholder="Ex: 12345678"
-                            value={manualTxId}
-                            onChange={(e) => setManualTxId(e.target.value)}
-                            required
-                        />
-                        <button type="submit" className="btn btn-small">Vérifier maintenant</button>
-                    </form>
+                    <button className="btn" onClick={() => window.location.reload()}>Réessayer</button>
                 </>
             )}
 
