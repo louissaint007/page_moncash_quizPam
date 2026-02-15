@@ -2,7 +2,22 @@
     "name": "moncash-middleman",
     "version": "1.0.0",
     "description": "MonCash Payment Middleman Site",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
     "dependencies": {
-        "axios": "^1.6.0"
+        "@supabase/supabase-js": "^2.39.7",
+        "axios": "^1.6.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.2.1",
+        "autoprefixer": "^10.4.16",
+        "postcss": "^8.4.32",
+        "tailwindcss": "^3.4.1",
+        "vite": "^5.0.10"
     }
 }
