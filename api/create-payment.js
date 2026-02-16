@@ -21,8 +21,8 @@ module.exports = async (req, res) => {
     }
 
     try {
-        const { amount, orderId } = req.body;
-        
+        const { amount, orderId, userId } = req.body;
+
         // Récupération des variables d'environnement Vercel
         const clientId = process.env.MONCASH_CLIENT_ID;
         const secretKey = process.env.MONCASH_CLIENT_SECRET;
@@ -37,10 +37,10 @@ module.exports = async (req, res) => {
 
         // 1. Authentification pour obtenir le Token 
         const credentials = Buffer.from(`${clientId}:${secretKey}`).toString('base64');
-        
+
         // La doc exige grant_type=client_credentials pour le oauth/token 
-        const authResponse = await axios.post(`${HOST_REST_API}/oauth/token`, 
-            "grant_type=client_credentials&scope=read,write", 
+        const authResponse = await axios.post(`${HOST_REST_API}/oauth/token`,
+            "grant_type=client_credentials&scope=read,write",
             {
                 headers: {
                     'Accept': 'application/json',

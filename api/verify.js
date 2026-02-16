@@ -74,31 +74,77 @@ module.exports = async (req, res) => {
             return res.status(400).json({ error: 'Order ID (Transaction ID internal) not found' });
         }
 
-        // 3. Update/Insert into Supabase 'transactions' table
-        // We use upsert on the 'id' column which is now a valid UUID from Site_Quiz_Pam
+        // 3. Update Supabase 'transactions' table
+        console.log(`[VERIFY] Checking transaction: ${finalOrderId}`);
+
+        // Use maybeSingle() to avoid error if not found, and select everything
+        const { data: existingTx, error: fetchError } = await supabase
+            .from('transactions')
+            .select('*')
+            .eq('id', finalOrderId)
+            .maybeSingle();
+
+        if (fetchError) {
+            console.error('[DATABASE ERROR] Fetch failed:', fetchError);
+            throw new Error(`Database error: ${fetchError.message}`);
+        }
+
+        if (!existingTx) {
+            console.error(`[VERIFY ERROR] Transaction ${finalOrderId} NOT FOUND in DB.`);
+            return res.status(404).json({ error: 'Transaction found in MonCash but not in our records.' });
+        }
+
+        console.log(`[VERIFY] Found existing transaction. User ID: ${existingTx.user_id}`);
+
+        // Merge Metadata: keep everything from pending, add moncash data
+        const currentMetadata = existingTx.metadata || {};
+        const updatedMetadata = {
+            ...currentMetadata,
+            moncash: moncashPayment,
+            verified_at: new Date().toISOString(),
+            user_id: existingTx.user_id || currentMetadata.user_id // Ensure ID is in metadata
+        };
+
+        const updateData = {
+            status: 'completed',
+            metadata: updatedMetadata
+        };
+
+        // If user_id column is missing but we have it elsewhere, restore it
+        // 1. Try to extract from combined ID (Site_Quiz_Pam format: userId__uuid)
+        let extractedUserId = null;
+        if (finalOrderId && finalOrderId.includes('__')) {
+            extractedUserId = finalOrderId.split('__')[0];
+            console.log(`[VERIFY] Extracted User ID from orderId: ${extractedUserId}`);
+        }
+
+        const finalUserId = existingTx.user_id || extractedUserId || updatedMetadata.user_id || req.query.userId || moncashPayment.userId;
+
+        if (finalUserId) {
+            updateData.user_id = finalUserId;
+            // Also ensure it's in metadata for good measure
+            updatedMetadata.user_id = finalUserId;
+        }
+
         const { error: dbError } = await supabase
             .from('transactions')
-            .upsert({
-                id: finalOrderId,
-                user_id: moncashPayment.userId || null, // Optional: capture user if provided
-                amount: moncashPayment.cost,
-                status: 'completed',
-                payment_method: 'MONCASH',
-                metadata: {
-                    moncash: moncashPayment,
-                    updated_at: new Date().toISOString()
-                }
-            }, { onConflict: 'id' });
+            .update(updateData)
+            .eq('id', finalOrderId);
 
         if (dbError) {
             throw dbError;
         }
 
-        return res.status(200).json({
+        const responsePayload = {
             success: true,
             message: 'Payment verified and recorded',
-            payment: moncashPayment
-        });
+            payment: moncashPayment,
+            transaction_id: finalOrderId,
+            userId: finalUserId
+        };
+        console.log("DEBUG: Réponse finale verification:", responsePayload);
+
+        return res.status(200).json(responsePayload);
 
     } catch (error) {
         console.error('Verification Error:', error);
