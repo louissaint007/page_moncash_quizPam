@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         statusText.innerText = "Connexion sécurisée à MonCash...";
-        console.log("DEBUG: Paramètres envoyés à l'API:", { amount, orderId, userId });
 
         const response = await fetch('/api/create-payment', {
             method: 'POST',
@@ -22,7 +21,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         const data = await response.json();
-        console.log("DEBUG: Réponse de l'API create-payment:", data);
 
         if (response.ok && data.url) {
             console.log(">>> [CLIENT] URL de paiement reçue");

@@ -142,7 +142,6 @@ module.exports = async (req, res) => {
             transaction_id: finalOrderId,
             userId: finalUserId
         };
-        console.log("DEBUG: Réponse finale verification:", responsePayload);
 
         return res.status(200).json(responsePayload);
 
