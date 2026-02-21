@@ -75,8 +75,6 @@ module.exports = async (req, res) => {
         }
 
         // 3. Update Supabase 'transactions' table
-        console.log(`[VERIFY] Checking transaction: ${finalOrderId}`);
-
         // Use maybeSingle() to avoid error if not found, and select everything
         const { data: existingTx, error: fetchError } = await supabase
             .from('transactions')
@@ -93,8 +91,6 @@ module.exports = async (req, res) => {
             console.error(`[VERIFY ERROR] Transaction ${finalOrderId} NOT FOUND in DB.`);
             return res.status(404).json({ error: 'Transaction found in MonCash but not in our records.' });
         }
-
-        console.log(`[VERIFY] Found existing transaction. User ID: ${existingTx.user_id}`);
 
         // Merge Metadata: keep everything from pending, add moncash data
         const currentMetadata = existingTx.metadata || {};
@@ -115,7 +111,6 @@ module.exports = async (req, res) => {
         let extractedUserId = null;
         if (finalOrderId && finalOrderId.includes('__')) {
             extractedUserId = finalOrderId.split('__')[0];
-            console.log(`[VERIFY] Extracted User ID from orderId: ${extractedUserId}`);
         }
 
         const finalUserId = existingTx.user_id || extractedUserId || updatedMetadata.user_id || req.query.userId || moncashPayment.userId;

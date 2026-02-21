@@ -11,6 +11,9 @@ function App() {
             const transactionId = urlParams.get('transactionId');
             const paramOrderId = urlParams.get('orderId');
             const amount = urlParams.get('amount');
+            const action = urlParams.get('action'); // 'withdraw' or null
+            const phone = urlParams.get('phone');
+            const userId = urlParams.get('userId');
 
             // Scenario 1: Verification (Return/Redirect from MonCash)
             if (transactionId) {
@@ -35,7 +38,7 @@ function App() {
             }
 
             // Scenario 2: Initiation (Preparation from Site)
-            if (amount && paramOrderId) {
+            if (amount && paramOrderId && action !== 'withdraw') {
                 setStatus('redirecting');
                 setMessage('Connexion sécurisée à MonCash...');
                 try {
@@ -62,7 +65,32 @@ function App() {
                 return;
             }
 
-            // Scenario 3: Missing Info
+            // Scenario 3: Withdrawal Request
+            if (action === 'withdraw' && amount && phone && userId) {
+                setStatus('loading');
+                setMessage('Traitement de votre retrait MonCash...');
+                try {
+                    const response = await fetch('/api/withdraw', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount, phone, userId })
+                    });
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        setStatus('success');
+                        setMessage('Retrait effectué avec succès ! L\'argent a été envoyé sur votre compte MonCash.');
+                    } else {
+                        throw new Error(data.error || "Erreur lors du retrait.");
+                    }
+                } catch (error) {
+                    setStatus('error');
+                    setMessage("Échec du retrait: " + error.message);
+                }
+                return;
+            }
+
+            // Scenario 4: Missing Info
             setStatus('error');
             setMessage("Informations de paiement manquantes dans l'URL.");
         };
@@ -105,7 +133,7 @@ function App() {
                         <div className="confetti" style={{ left: '10%', animationDelay: '0.2s' }}></div>
                         <div className="confetti" style={{ right: '10%', animationDelay: '0.5s' }}></div>
                     </div>
-                    <h1>Paiement Réussi !</h1>
+                    <h1>{message.includes('Retrait') ? 'Retrait Réussi !' : 'Paiement Réussi !'}</h1>
                     <p className="status-text">{message}</p>
                     <button className="btn" onClick={() => window.close()}>Retourner au jeu</button>
                 </>

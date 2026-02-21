@@ -23,8 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const data = await response.json();
 
         if (response.ok && data.url) {
-            console.log(">>> [CLIENT] URL de paiement reçue");
-
             // 1. On change le texte pour inviter l'utilisateur à cliquer si ça bloque
             statusText.innerHTML = `
                 <div style="margin-top: 20px;">
