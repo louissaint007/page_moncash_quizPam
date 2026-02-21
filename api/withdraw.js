@@ -81,12 +81,12 @@ module.exports = async (req, res) => {
         }
 
         // 4. Initiate Transfer / Payout
-        // MonCash Transfer API Endpoint (Check Digicel Docs, /v1/Transfer is common)
+        // MonCash Transfer API Endpoint (Check Digicel Docs, /v1/Transfert)
         let transferSuccess = false;
         let transferData = null;
 
         try {
-            const transferResponse = await axios.post(`${MONCASH_API_URL}/v1/Transfer`, {
+            const transferResponse = await axios.post(`${MONCASH_API_URL}/v1/Transfert`, {
                 amount: withdrawalAmount,
                 receiver: phone,
                 desc: "Retrait QuizPam",
