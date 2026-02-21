@@ -109,10 +109,13 @@ module.exports = async (req, res) => {
 
         } catch (transferError) {
             console.error("[MONCASH TRANSFER ERROR]", transferError.response ? transferError.response.data : transferError.message);
+            const detailedError = transferError.response && transferError.response.data
+                ? JSON.stringify(transferError.response.data)
+                : transferError.message;
+
             // Si MonCash échoue (ex: numéro invalid), on ne continue pas.
             return res.status(400).json({
-                error: 'Échec du transfert MonCash.',
-                details: transferError.response ? transferError.response.data : transferError.message
+                error: `Échec du transfert MonCash. Détails: ${detailedError}`
             });
         }
 
